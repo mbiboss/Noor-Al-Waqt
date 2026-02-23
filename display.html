@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no, viewport-fit=cover">
+    <title>Noor Al-Waqt | Display Mode</title>
+    <meta name="theme-color" content="#000000">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;700&family=Inter:wght@300;400;500;600&family=Noto+Sans+Bengali:wght@300;400;500;700&family=Orbitron:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="display.css?v=1.0.3">
+    <link rel="icon" type="image/png" href="logo.png" />
+</head>
+<body>
+    <!-- Ambient Glow Effects -->
+    <div class="ambient-glow top-glow"></div>
+    <div class="ambient-glow bottom-glow"></div>
+
+    <!-- Golden Border Frame -->
+    <div class="golden-frame">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        <div class="frame-line frame-top"></div>
+        <div class="frame-line frame-bottom"></div>
+        <div class="frame-line frame-left"></div>
+        <div class="frame-line frame-right"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="display-container">
+
+        <!-- Header Info -->
+        <div class="header-section">
+            <div class="location-chip">
+                <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span id="location-text">Dhaka, Bangladesh</span>
+            </div>
+            <div class="date-chip">
+                <span id="islamic-date">1 Ramadan 1446</span>
+            </div>
+        </div>
+
+        <!-- Clock Section -->
+        <div class="clock-section">
+            <div class="clock-display">
+                <span class="time-main" id="main-time">00:00</span>
+                <span class="time-separator">:</span>
+                <span class="time-seconds" id="main-seconds">00</span>
+                <span class="time-ampm" id="main-ampm">AM</span>
+            </div>
+            <div class="gregorian-date" id="gregorian-date">Monday, January 1, 2026</div>
+        </div>
+
+        <!-- Prayer Info Section (Hidden during Sunrise) -->
+        <div class="prayer-section" id="prayer-section">
+            <div class="prayer-label">Next Prayer</div>
+            <div class="prayer-name" id="prayer-name">Fajr</div>
+            <div class="prayer-time" id="prayer-time">05:30 AM</div>
+
+            <!-- Fixed Width Countdown Boxes -->
+            <div class="countdown-wrapper">
+                <div class="countdown-box">
+                    <span class="countdown-value" id="count-h">00</span>
+                    <span class="countdown-label">hr</span>
+                </div>
+                <span class="countdown-divider">:</span>
+                <div class="countdown-box">
+                    <span class="countdown-value" id="count-m">00</span>
+                    <span class="countdown-label">min</span>
+                </div>
+                <span class="countdown-divider">:</span>
+                <div class="countdown-box">
+                    <span class="countdown-value" id="count-s">00</span>
+                    <span class="countdown-label">sec</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sunrise Message (Shown only during Sunrise) -->
+        <div class="sunrise-section hidden" id="sunrise-section">
+            <div class="sunrise-icon">
+                <svg viewBox="0 0 64 64" fill="none">
+                    <circle cx="32" cy="32" r="12" fill="url(#sunGradient)"/>
+                    <g stroke="url(#sunGradient)" stroke-width="2" stroke-linecap="round">
+                        <line x1="32" y1="8" x2="32" y2="4"/>
+                        <line x1="32" y1="60" x2="32" y2="56"/>
+                        <line x1="8" y1="32" x2="4" y2="32"/>
+                        <line x1="60" y1="32" x2="56" y2="32"/>
+                        <line x1="15" y1="15" x2="12" y2="12"/>
+                        <line x1="49" y1="49" x2="52" y2="52"/>
+                        <line x1="15" y1="49" x2="12" y2="52"/>
+                        <line x1="49" y1="15" x2="52" y2="12"/>
+                    </g>
+                    <defs>
+                        <linearGradient id="sunGradient" x1="0" y1="0" x2="64" y2="64">
+                            <stop offset="0%" stop-color="#fbbf24"/>
+                            <stop offset="100%" stop-color="#f59e0b"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <div class="sunrise-text">Sunrise</div>
+            <div class="sunrise-time" id="sunrise-time">06:15 AM</div>
+            <div class="sunrise-message">Time for Ishraq Prayer</div>
+        </div>
+
+        <!-- Ayat Box -->
+        <div class="ayat-container">
+            <div class="ayat-glow"></div>
+            <div class="ayat-content">
+                <div class="ayat-header">
+                    <button id="prev-ayat" class="mini-nav-btn" aria-label="Previous Verse" style="background: rgba(251, 191, 36, 0.1); border: 1px solid var(--gold-dim); color: var(--gold-primary); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <div style="text-align: center; flex: 1;">
+                        <span class="ayat-badge">Quranic Verse</span>
+                        <span class="surah-name" id="surah-name">Surah Al-Fatiha</span>
+                    </div>
+                    <button id="next-ayat" class="mini-nav-btn" aria-label="Next Verse" style="background: rgba(251, 191, 36, 0.1); border: 1px solid var(--gold-dim); color: var(--gold-primary); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6 6-6" transform="rotate(180 12 12)"/></svg>
+                    </button>
+                </div>
+                <div class="ayat-arabic" id="ayat-arabic">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰনِ ٱلرَّحِيمِ</div>
+                <div class="divider">
+                    <span class="divider-line"></span>
+                    <span class="divider-icon">۞</span>
+                    <span class="divider-line"></span>
+                </div>
+                <div class="ayat-pronounce" id="ayat-pronounce">বিসমিল্লাহির রাহমানির রাহীম</div>
+                <div class="ayat-meaning" id="ayat-meaning">পরম করুণাময় অতি দয়ালু আল্লাহর নামে</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Exit Button -->
+    <button class="exit-btn" id="exit-btn" aria-label="Exit Display Mode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6 6 18"/>
+            <path d="m6 6 12 12"/>
+        </svg>
+    </button>
+
+    <!-- Mute Button -->
+    <button class="mute-btn" id="mute-btn" aria-label="Mute/Unmute Quran Radio">
+        <svg id="mute-icon-display" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+            <line x1="23" y1="9" x2="17" y2="15"/>
+            <line x1="17" y1="9" x2="23" y2="15"/>
+        </svg>
+        <svg id="unmute-icon-display" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        </svg>
+    </button>
+
+    <script src="display.js?v=1.0.3"></script>
+</body>
+</html>

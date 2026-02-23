@@ -2,18 +2,19 @@
   "name": "Noor Al-Waqt",
   "short_name": "NoorWaqt",
   "description": "Cinematic Islamic Prayer Times & Ramadan Calendar",
-  "start_url": "/",
+  "start_url": "./index.html",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#000000",
   "theme_color": "#10b981",
   "icons": [
     {
-      "src": "https://images.unsplash.com/photo-1555400038-63f5ba517a47?q=80&w=192&h=192&auto=format&fit=crop",
+      "src": "logo.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://images.unsplash.com/photo-1555400038-63f5ba517a47?q=80&w=512&h=512&auto=format&fit=crop",
+      "src": "logo.png",
       "sizes": "512x512",
       "type": "image/png"
     }

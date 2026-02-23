@@ -1,0 +1,881 @@
+/* ============================================
+   NOOR AL-WAQT - DISPLAY MODE
+   Professional AMOLED Display with Golden Glow
+   ============================================ */
+
+@font-face {
+    font-family: 'BanglaCustom';
+    src: url('Bangla_font.ttf') format('truetype');
+    font-display: swap;
+}
+
+:root {
+    --pure-black: #000000;
+    --gold-primary: #fbbf24;
+    --gold-bright: #fcd34d;
+    --gold-dim: rgba(251, 191, 36, 0.3);
+    --gold-glow: rgba(251, 191, 36, 0.15);
+    --emerald: #10b981;
+    --emerald-glow: rgba(16, 185, 129, 0.2);
+    --text-white: #ffffff;
+    --text-gray: #9ca3af;
+    --text-dim: #6b7280;
+
+    --font-digital: 'Orbitron', monospace;
+    --font-arabic: 'Amiri', 'Tajawal', serif;
+    --font-bangla: 'BanglaCustom', 'Noto Sans Bengali', sans-serif;
+    --font-heading: 'Cinzel', serif;
+    --font-body: 'Inter', sans-serif;
+}
+
+/* Reset - Pure Black Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    background: var(--pure-black);
+    color: var(--text-white);
+    font-family: var(--font-body);
+    overflow: hidden;
+}
+
+/* ============================================
+   AMBIENT GLOW EFFECTS
+   ============================================ */
+.ambient-glow {
+    position: fixed;
+    width: 60vw;
+    height: 60vh;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.top-glow {
+    top: -25%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, var(--gold-primary) 0%, transparent 70%);
+}
+
+.bottom-glow {
+    bottom: -35%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, var(--emerald) 0%, transparent 70%);
+}
+
+/* ============================================
+   GOLDEN FRAME BORDER
+   ============================================ */
+.golden-frame {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.frame-line {
+    position: absolute;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--gold-dim) 20%, 
+        var(--gold-primary) 50%, 
+        var(--gold-dim) 80%, 
+        transparent 100%
+    );
+}
+
+.frame-top {
+    top: 10px;
+    left: 50px;
+    right: 50px;
+    height: 1px;
+    box-shadow: 0 0 8px var(--gold-dim);
+}
+
+.frame-bottom {
+    bottom: 10px;
+    left: 50px;
+    right: 50px;
+    height: 1px;
+    box-shadow: 0 0 8px var(--gold-dim);
+}
+
+.frame-left {
+    left: 10px;
+    top: 50px;
+    bottom: 50px;
+    width: 1px;
+    background: linear-gradient(180deg, 
+        transparent 0%, 
+        var(--gold-dim) 20%, 
+        var(--gold-primary) 50%, 
+        var(--gold-dim) 80%, 
+        transparent 100%
+    );
+    box-shadow: 0 0 8px var(--gold-dim);
+}
+
+.frame-right {
+    right: 10px;
+    top: 50px;
+    bottom: 50px;
+    width: 1px;
+    background: linear-gradient(180deg, 
+        transparent 0%, 
+        var(--gold-dim) 20%, 
+        var(--gold-primary) 50%, 
+        var(--gold-dim) 80%, 
+        transparent 100%
+    );
+    box-shadow: 0 0 8px var(--gold-dim);
+}
+
+/* Corner Accents */
+.corner {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--gold-dim);
+    box-shadow: 0 0 10px var(--gold-glow);
+}
+
+.corner-tl {
+    top: 6px;
+    left: 6px;
+    border-right: none;
+    border-bottom: none;
+    border-top-left-radius: 6px;
+}
+
+.corner-tr {
+    top: 6px;
+    right: 6px;
+    border-left: none;
+    border-bottom: none;
+    border-top-right-radius: 6px;
+}
+
+.corner-bl {
+    bottom: 6px;
+    left: 6px;
+    border-right: none;
+    border-top: none;
+    border-bottom-left-radius: 6px;
+}
+
+.corner-br {
+    bottom: 6px;
+    right: 6px;
+    border-left: none;
+    border-top: none;
+    border-bottom-right-radius: 6px;
+}
+
+/* ============================================
+   MAIN CONTAINER
+   ============================================ */
+.display-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 16px 32px 20px;
+    gap: 12px;
+    z-index: 10;
+    overflow-y: auto;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ============================================
+   HEADER SECTION
+   ============================================ */
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    flex-shrink: 0;
+}
+
+.location-chip, .date-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: rgba(251, 191, 36, 0.05);
+    border: 1px solid var(--gold-dim);
+    border-radius: 16px;
+    font-size: 0.7rem;
+    color: var(--gold-primary);
+    letter-spacing: 0.5px;
+}
+
+.location-icon {
+    width: 12px;
+    height: 12px;
+}
+
+/* ============================================
+   CLOCK SECTION
+   ============================================ */
+.clock-section {
+    text-align: center;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.clock-display {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+    line-height: 1;
+}
+
+.time-main {
+    font-family: var(--font-digital);
+    font-size: clamp(3.5rem, 12vw, 7rem);
+    font-weight: 700;
+    color: var(--text-white);
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
+    letter-spacing: -1px;
+}
+
+.time-separator {
+    font-family: var(--font-digital);
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    color: var(--gold-dim);
+    animation: pulse 1s ease-in-out infinite;
+}
+
+.time-seconds {
+    font-family: var(--font-digital);
+    font-size: clamp(1.2rem, 4vw, 2.2rem);
+    font-weight: 500;
+    color: var(--text-gray);
+    opacity: 0.7;
+    min-width: 50px;
+    text-align: center;
+}
+
+.time-ampm {
+    font-family: var(--font-digital);
+    font-size: clamp(0.9rem, 2.5vw, 1.4rem);
+    color: var(--gold-primary);
+    margin-left: 6px;
+    font-weight: 500;
+}
+
+.gregorian-date {
+    margin-top: 4px;
+    font-size: clamp(0.65rem, 1.8vw, 0.8rem);
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.9; }
+}
+
+/* ============================================
+   COMPACT PRAYER SECTION
+   ============================================ */
+.prayer-section {
+    text-align: center;
+    padding: 10px 20px;
+    background: linear-gradient(180deg, 
+        rgba(16, 185, 129, 0.06) 0%, 
+        rgba(16, 185, 129, 0.02) 100%
+    );
+    border: 1px solid rgba(16, 185, 129, 0.15);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    flex-shrink: 0;
+}
+
+.prayer-label {
+    font-size: 0.55rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 2px;
+}
+
+.prayer-name {
+    font-family: var(--font-heading);
+    font-size: clamp(1.2rem, 4vw, 1.8rem);
+    color: var(--emerald);
+    font-weight: 700;
+    text-shadow: 0 0 15px var(--emerald-glow);
+    margin-bottom: 2px;
+}
+
+.prayer-time {
+    font-family: var(--font-digital);
+    font-size: clamp(0.85rem, 2.5vw, 1.1rem);
+    color: var(--text-white);
+    opacity: 0.85;
+    margin-bottom: 8px;
+}
+
+/* Fixed Width Countdown Boxes */
+.countdown-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+.countdown-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 44px;
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid var(--gold-dim);
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.countdown-value {
+    font-family: var(--font-digital);
+    font-size: clamp(1.1rem, 3vw, 1.4rem);
+    font-weight: 700;
+    color: var(--gold-primary);
+    line-height: 1;
+    text-shadow: 0 0 8px var(--gold-glow);
+    min-width: 28px;
+    text-align: center;
+}
+
+.countdown-label {
+    font-size: 0.5rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+.countdown-divider {
+    font-family: var(--font-digital);
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    color: var(--gold-dim);
+    opacity: 0.5;
+    padding-bottom: 8px;
+}
+
+/* ============================================
+   SUNRISE SECTION
+   ============================================ */
+.sunrise-section {
+    text-align: center;
+    padding: 12px 28px;
+    animation: fadeIn 0.5s ease;
+    flex-shrink: 0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.sunrise-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 8px;
+    animation: sunPulse 3s ease-in-out infinite;
+}
+
+@keyframes sunPulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px var(--gold-dim)); }
+    50% { transform: scale(1.05); filter: drop-shadow(0 0 15px var(--gold-primary)); }
+}
+
+.sunrise-text {
+    font-family: var(--font-heading);
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    color: var(--gold-primary);
+    font-weight: 700;
+    text-shadow: 0 0 15px var(--gold-glow);
+    margin-bottom: 2px;
+}
+
+.sunrise-time {
+    font-family: var(--font-digital);
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    color: var(--text-white);
+    margin-bottom: 6px;
+}
+
+.sunrise-message {
+    font-size: 0.65rem;
+    color: var(--text-gray);
+    letter-spacing: 1px;
+    padding: 4px 12px;
+    background: rgba(251, 191, 36, 0.05);
+    border-radius: 16px;
+    display: inline-block;
+}
+
+/* ============================================
+   AYAT CONTAINER
+   ============================================ */
+.ayat-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin-top: auto;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+}
+
+.ayat-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 85%;
+    height: 110%;
+    background: radial-gradient(ellipse, var(--gold-glow) 0%, transparent 70%);
+    filter: blur(25px);
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.ayat-content {
+    position: relative;
+    background: linear-gradient(145deg, 
+        rgba(251, 191, 36, 0.06) 0%, 
+        rgba(0, 0, 0, 0.9) 50%,
+        rgba(251, 191, 36, 0.04) 100%
+    );
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    border-radius: 16px;
+    padding: 14px 18px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.08);
+}
+
+.ayat-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20%;
+    right: 20%;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--gold-primary) 50%, 
+        transparent 100%
+    );
+}
+
+.ayat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.ayat-badge {
+    font-size: 0.5rem;
+    color: var(--gold-primary);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 2px 8px;
+    background: rgba(251, 191, 36, 0.08);
+    border-radius: 8px;
+    border: 1px solid var(--gold-dim);
+}
+
+.surah-name {
+    font-family: var(--font-heading);
+    font-size: 0.6rem;
+    color: var(--text-gray);
+    letter-spacing: 0.5px;
+}
+
+.ayat-arabic {
+    font-family: var(--font-arabic);
+    font-size: clamp(1.1rem, 3.5vw, 1.6rem);
+    color: var(--gold-primary);
+    text-align: center;
+    line-height: 1.7;
+    direction: rtl;
+    text-shadow: 0 0 20px var(--gold-glow);
+    margin-bottom: 8px;
+    min-height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+}
+
+/* Divider */
+.divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 8px 0;
+}
+
+.divider-line {
+    flex: 1;
+    max-width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--gold-dim) 50%, 
+        transparent 100%
+    );
+}
+
+.divider-icon {
+    color: var(--gold-dim);
+    font-size: 0.75rem;
+}
+
+.ayat-pronounce {
+    font-family: var(--font-bangla);
+    font-size: clamp(0.75rem, 2.2vw, 0.95rem);
+    color: var(--emerald);
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 6px;
+    transition: opacity 0.3s ease;
+}
+
+.ayat-meaning {
+    font-family: var(--font-bangla);
+    font-size: clamp(0.65rem, 1.8vw, 0.8rem);
+    color: var(--gold-primary);
+    text-align: center;
+    line-height: 1.4;
+    font-style: italic;
+    transition: opacity 0.3s ease;
+}
+
+/* ============================================
+   EXIT BUTTON
+   ============================================ */
+.exit-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: var(--text-gray);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 200;
+}
+
+.exit-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.exit-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #ef4444;
+}
+
+/* ============================================
+   MUTE BUTTON
+   ============================================ */
+.mute-btn {
+    position: fixed;
+    top: 20px;
+    right: 64px;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: var(--text-gray);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 200;
+}
+
+.mute-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.mute-btn:hover {
+    background: rgba(251, 191, 36, 0.1);
+    border-color: var(--gold-dim);
+    color: var(--gold-primary);
+}
+
+.mute-btn.active {
+    background: rgba(251, 191, 36, 0.15);
+    border-color: var(--gold-primary);
+    color: var(--gold-primary);
+}
+
+.mini-nav-btn {
+    transition: all 0.2s ease;
+}
+
+.mini-nav-btn:hover {
+    background: rgba(251, 191, 36, 0.2) !important;
+    transform: scale(1.1);
+}
+
+.mini-nav-btn:active {
+    transform: scale(0.9);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Mobile Portrait */
+@media (max-width: 480px) {
+    .display-container {
+        padding: 14px 20px 16px;
+        gap: 10px;
+    }
+
+    .header-section {
+        max-width: 100%;
+    }
+
+    .location-chip, .date-chip {
+        font-size: 0.6rem;
+        padding: 4px 8px;
+    }
+
+    .clock-section {
+        margin-top: 2px;
+    }
+
+    .time-seconds {
+        min-width: 40px;
+    }
+
+    .prayer-section {
+        padding: 8px 16px;
+    }
+
+    .countdown-box {
+        min-width: 38px;
+        height: 38px;
+    }
+
+    .countdown-value {
+        font-size: 1rem;
+        min-width: 24px;
+    }
+
+    .ayat-container {
+        max-width: 100%;
+        margin-bottom: 4px;
+    }
+
+    .ayat-content {
+        padding: 12px 14px;
+    }
+
+    .golden-frame .frame-top,
+    .golden-frame .frame-bottom {
+        left: 30px;
+        right: 30px;
+    }
+
+    .golden-frame .frame-left,
+    .golden-frame .frame-right {
+        top: 35px;
+        bottom: 35px;
+    }
+
+    .corner {
+        width: 18px;
+        height: 18px;
+    }
+
+    .exit-btn, .mute-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    .mute-btn {
+        right: 56px;
+    }
+}
+
+/* Mobile Landscape - KEY FIX */
+@media (max-height: 500px) and (orientation: landscape) {
+    .display-container {
+        padding: 10px 40px 12px;
+        gap: 6px;
+        justify-content: flex-start;
+    }
+
+    .header-section {
+        max-width: 500px;
+    }
+
+    .clock-section {
+        margin-top: 0;
+    }
+
+    .time-main {
+        font-size: clamp(2.2rem, 10vh, 4rem);
+    }
+
+    .time-separator {
+        font-size: clamp(1.6rem, 7vh, 3rem);
+    }
+
+    .time-seconds {
+        font-size: clamp(0.9rem, 3vh, 1.4rem);
+        min-width: 36px;
+    }
+
+    .time-ampm {
+        font-size: clamp(0.7rem, 2vh, 1rem);
+    }
+
+    .prayer-section {
+        padding: 6px 16px;
+    }
+
+    .prayer-name {
+        font-size: clamp(1rem, 3.5vh, 1.5rem);
+    }
+
+    .countdown-box {
+        min-width: 36px;
+        height: 36px;
+    }
+
+    .countdown-value {
+        font-size: 0.95rem;
+    }
+
+    .sunrise-section {
+        padding: 8px 20px;
+    }
+
+    .sunrise-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .ayat-container {
+        max-width: 450px;
+        margin-top: 4px;
+        margin-bottom: 2px;
+    }
+
+    .ayat-content {
+        padding: 10px 14px;
+    }
+
+    .ayat-arabic {
+        font-size: clamp(0.9rem, 2.8vh, 1.3rem);
+        min-height: 32px;
+        margin-bottom: 4px;
+    }
+
+    .divider {
+        margin: 4px 0;
+    }
+
+    .ayat-pronounce {
+        font-size: clamp(0.65rem, 2vh, 0.8rem);
+        margin-bottom: 2px;
+    }
+
+    .ayat-meaning {
+    font-size: clamp(0.55rem, 1.6vh, 0.7rem);
+    }
+
+    .exit-btn, .mute-btn {
+        top: 10px;
+        width: 28px;
+        height: 28px;
+    }
+
+    .mute-btn {
+        right: 44px;
+    }
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .display-container {
+        padding: 20px 50px 24px;
+        gap: 14px;
+    }
+
+    .ayat-container {
+        max-width: 550px;
+    }
+}
+
+/* Large Screens */
+@media (min-width: 1400px) {
+    .display-container {
+        padding: 24px 80px 28px;
+        gap: 16px;
+    }
+
+    .ayat-container {
+        max-width: 700px;
+    }
+}
+
+/* AMOLED Optimization */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #000000;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
