@@ -183,8 +183,7 @@ function createAudioElement() {
     quranAudio.crossOrigin = "anonymous";
     quranAudio.loop = true;
     quranAudio.volume = 0.7;
-
-    quranAudio.src = RADIO_STREAMS[currentStreamIndex];
+    quranAudio.preload = 'none';
 
     quranAudio.addEventListener('error', (e) => {
         console.error('Audio error on stream', currentStreamIndex, e);
@@ -244,6 +243,7 @@ function updateAudioPlayback() {
     if (isAudioMuted) {
         quranAudio.pause();
     } else {
+        if (!quranAudio.src) quranAudio.src = RADIO_STREAMS[currentStreamIndex];
         quranAudio.load();
         const playPromise = quranAudio.play();
         if (playPromise !== undefined) {
@@ -298,18 +298,13 @@ async function init() {
         });
     }
 
-    const enterFullscreen = () => {
-        const docEl = document.documentElement;
-        const requestFS = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
-        if (requestFS && !document.fullscreenElement) {
-            requestFS.call(docEl).catch(err => console.log("Fullscreen error:", err));
-        }
-    };
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowLeft' && prevAyatBtn) prevAyatBtn.click();
+        if (event.key === 'ArrowRight' && nextAyatBtn) nextAyatBtn.click();
+        if (event.key === 'Escape' && !document.fullscreenElement) exitDisplayMode();
+    });
 
-    document.addEventListener('click', enterFullscreen);
-    document.addEventListener('touchstart', enterFullscreen);
-
-    setTimeout(enterFullscreen, 500);
+    initFullscreenToggle();
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
@@ -321,6 +316,35 @@ async function init() {
     setInterval(rotateAyat, 30000);
 
     updateDisplay();
+}
+
+function initFullscreenToggle() {
+    const button = document.getElementById('fullscreen-toggle-btn');
+    const enterIcon = document.getElementById('fullscreen-enter-icon');
+    const exitIcon = document.getElementById('fullscreen-exit-icon');
+    if (!button) return;
+
+    const updateFullscreenUI = () => {
+        const isFullscreen = Boolean(document.fullscreenElement);
+        button.setAttribute('aria-label', isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen');
+        button.title = isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen';
+        if (enterIcon) enterIcon.classList.toggle('hidden', isFullscreen);
+        if (exitIcon) exitIcon.classList.toggle('hidden', !isFullscreen);
+    };
+
+    button.addEventListener('click', () => {
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
+        } else if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().then(() => {
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch(() => {});
+                }
+            }).catch(() => {});
+        }
+    });
+    document.addEventListener('fullscreenchange', updateFullscreenUI);
+    updateFullscreenUI();
 }
 
 // ============================================
@@ -369,6 +393,11 @@ async function handleVisibilityChange() {
 // ============================================
 function exitDisplayMode() {
     releaseWakeLock();
+    if (window.parent !== window) {
+        if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        window.parent.postMessage({ type: 'noor-exit-display' }, window.location.origin);
+        return;
+    }
     if (document.exitFullscreen) {
         document.exitFullscreen().catch(() => {});
     }
@@ -416,8 +445,33 @@ async function fetchPrayerTimes() {
         const url = `${API_URL}/calendarByCity/${year}/${month}?city=${state.city}&country=${state.country}&method=1&school=1`;
         const nextMonthUrl = `${API_URL}/calendarByCity/${year}/${month + 1}?city=${state.city}&country=${state.country}&method=1&school=1`;
 
-        const [resp1, resp2] = await Promise.all([fetch(url), fetch(nextMonthUrl)]);
-        const [data1, data2] = await Promise.all([resp1.json(), resp2.json()]);
+        const fetchJson = async (requestUrl) => {
+            for (let attempt = 0; attempt < 3; attempt++) {
+                const response = await fetch(requestUrl);
+                if (response.ok) return response.json();
+                if (response.status < 500 || attempt === 2) {
+                    throw new Error(`Prayer API returned HTTP ${response.status}`);
+                }
+                await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+            }
+        };
+
+        const fetchDaily = async (requestUrl) => {
+            try {
+                return await fetchJson(requestUrl);
+            } catch (monthlyError) {
+                const dateString = `${new Date().getDate().toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}`;
+                const dailyUrl = `${API_URL}/timingsByCity/${dateString}?city=${encodeURIComponent(state.city)}&country=${encodeURIComponent(state.country)}&method=1&school=1`;
+                const response = await fetchJson(dailyUrl);
+                if (response.code === 200) return { code: 200, data: [response.data] };
+                throw monthlyError;
+            }
+        };
+
+        const [data1, data2] = await Promise.all([
+            fetchDaily(url),
+            fetchJson(nextMonthUrl).catch(() => ({ code: 500, data: [] }))
+        ]);
 
         if (data1.code === 200) {
             let combinedData = [...data1.data];

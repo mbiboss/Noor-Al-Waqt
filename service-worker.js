@@ -1,17 +1,19 @@
-const CACHE_NAME = "noor-al-waqt-v1";
+const CACHE_NAME = "noor-al-waqt-v6";
 
-const ASSETS = [
-  "/",
-  "/index.html",
-  "/style.css",
-  "/script.js",
-  "/display.html",
-  "/display.css",
-  "/display.js",
-  "/manifest.json",
-  "/logo.png",
-  "/Bangla_font.ttf"
+const ASSET_PATHS = [
+  "",
+  "index.html",
+  "style.css",
+  "script.js",
+  "display.html",
+  "display.css",
+  "display.js",
+  "manifest.json",
+  "logo.png",
+  "Bangla_font.ttf"
 ];
+
+const ASSETS = ASSET_PATHS.map((path) => new URL(path, self.registration.scope).href);
 
 // Install
 self.addEventListener("install", (event) => {
@@ -42,6 +44,7 @@ self.addEventListener("activate", (event) => {
 // Fetch (Cache First Strategy)
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+  if (new URL(event.request.url).origin !== self.location.origin) return;
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
@@ -56,7 +59,7 @@ self.addEventListener("fetch", (event) => {
       );
     }).catch(() => {
       if (event.request.mode === "navigate") {
-        return caches.match("/index.html");
+        return caches.match(new URL("index.html", self.registration.scope).href);
       }
     })
   );

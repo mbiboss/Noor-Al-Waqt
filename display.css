@@ -1,881 +1,149 @@
-/* ============================================
-   NOOR AL-WAQT - DISPLAY MODE
-   Professional AMOLED Display with Golden Glow
-   ============================================ */
-
-@font-face {
-    font-family: 'BanglaCustom';
-    src: url('Bangla_font.ttf') format('truetype');
-    font-display: swap;
-}
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cinzel:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;700&family=Orbitron:wght@500;600;700&display=swap');
 
 :root {
-    --pure-black: #000000;
-    --gold-primary: #fbbf24;
-    --gold-bright: #fcd34d;
-    --gold-dim: rgba(251, 191, 36, 0.3);
-    --gold-glow: rgba(251, 191, 36, 0.15);
-    --emerald: #10b981;
-    --emerald-glow: rgba(16, 185, 129, 0.2);
-    --text-white: #ffffff;
-    --text-gray: #9ca3af;
-    --text-dim: #6b7280;
-
+    --night: #080807;
+    --night-soft: #16140f;
+    --panel: rgba(27, 25, 19, .9);
+    --gold: #d4af37;
+    --gold-soft: #f0d58c;
+    --gold-accent: #d4af37;
+    --gold-primary: #d4af37;
+    --gold-dim: rgba(212, 175, 55, .32);
+    --ivory: #f5eedb;
+    --muted: #a9a18d;
+    --line: rgba(212, 175, 55, .32);
+    --line-soft: rgba(245, 238, 211, .12);
+    --font-display: 'Cinzel', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-arabic: 'Amiri', serif;
+    --font-bangla: 'Noto Sans Bengali', sans-serif;
     --font-digital: 'Orbitron', monospace;
-    --font-arabic: 'Amiri', 'Tajawal', serif;
-    --font-bangla: 'BanglaCustom', 'Noto Sans Bengali', sans-serif;
-    --font-heading: 'Cinzel', serif;
-    --font-body: 'Inter', sans-serif;
 }
 
-/* Reset - Pure Black Base */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
-html, body {
-    width: 100%;
-    height: 100%;
-    background: var(--pure-black);
-    color: var(--text-white);
-    font-family: var(--font-body);
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-width: 320px; min-height: 100%; }
+body {
+    min-height: 100vh;
     overflow: hidden;
+    color: var(--ivory);
+    background:
+        radial-gradient(circle at 50% -20%, rgba(212, 175, 55, .16), transparent 42%),
+        radial-gradient(circle at 90% 90%, rgba(212, 175, 55, .08), transparent 28%),
+        linear-gradient(145deg, var(--night) 0%, var(--night-soft) 60%, #050504 100%);
+    font: 400 14px/1.5 var(--font-body);
+    -webkit-font-smoothing: antialiased;
 }
-
-/* ============================================
-   AMBIENT GLOW EFFECTS
-   ============================================ */
-.ambient-glow {
+body::before {
     position: fixed;
-    width: 60vw;
-    height: 60vh;
-    border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.06;
-    pointer-events: none;
-    z-index: 0;
-}
-
-.top-glow {
-    top: -25%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: radial-gradient(circle, var(--gold-primary) 0%, transparent 70%);
-}
-
-.bottom-glow {
-    bottom: -35%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: radial-gradient(circle, var(--emerald) 0%, transparent 70%);
-}
-
-/* ============================================
-   GOLDEN FRAME BORDER
-   ============================================ */
-.golden-frame {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
-    z-index: 100;
-}
-
-.frame-line {
-    position: absolute;
-    background: linear-gradient(90deg, 
-        transparent 0%, 
-        var(--gold-dim) 20%, 
-        var(--gold-primary) 50%, 
-        var(--gold-dim) 80%, 
-        transparent 100%
-    );
-}
-
-.frame-top {
-    top: 10px;
-    left: 50px;
-    right: 50px;
-    height: 1px;
-    box-shadow: 0 0 8px var(--gold-dim);
-}
-
-.frame-bottom {
-    bottom: 10px;
-    left: 50px;
-    right: 50px;
-    height: 1px;
-    box-shadow: 0 0 8px var(--gold-dim);
-}
-
-.frame-left {
-    left: 10px;
-    top: 50px;
-    bottom: 50px;
-    width: 1px;
-    background: linear-gradient(180deg, 
-        transparent 0%, 
-        var(--gold-dim) 20%, 
-        var(--gold-primary) 50%, 
-        var(--gold-dim) 80%, 
-        transparent 100%
-    );
-    box-shadow: 0 0 8px var(--gold-dim);
-}
-
-.frame-right {
-    right: 10px;
-    top: 50px;
-    bottom: 50px;
-    width: 1px;
-    background: linear-gradient(180deg, 
-        transparent 0%, 
-        var(--gold-dim) 20%, 
-        var(--gold-primary) 50%, 
-        var(--gold-dim) 80%, 
-        transparent 100%
-    );
-    box-shadow: 0 0 8px var(--gold-dim);
-}
-
-/* Corner Accents */
-.corner {
-    position: absolute;
-    width: 24px;
-    height: 24px;
-    border: 1px solid var(--gold-dim);
-    box-shadow: 0 0 10px var(--gold-glow);
-}
-
-.corner-tl {
-    top: 6px;
-    left: 6px;
-    border-right: none;
-    border-bottom: none;
-    border-top-left-radius: 6px;
-}
-
-.corner-tr {
-    top: 6px;
-    right: 6px;
-    border-left: none;
-    border-bottom: none;
-    border-top-right-radius: 6px;
-}
-
-.corner-bl {
-    bottom: 6px;
-    left: 6px;
-    border-right: none;
-    border-top: none;
-    border-bottom-left-radius: 6px;
-}
-
-.corner-br {
-    bottom: 6px;
-    right: 6px;
-    border-left: none;
-    border-top: none;
-    border-bottom-right-radius: 6px;
-}
-
-/* ============================================
-   MAIN CONTAINER
-   ============================================ */
-.display-container {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 16px 32px 20px;
-    gap: 12px;
-    z-index: 10;
-    overflow-y: auto;
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* ============================================
-   HEADER SECTION
-   ============================================ */
-.header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 600px;
-    flex-shrink: 0;
-}
-
-.location-chip, .date-chip {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 12px;
-    background: rgba(251, 191, 36, 0.05);
-    border: 1px solid var(--gold-dim);
-    border-radius: 16px;
-    font-size: 0.7rem;
-    color: var(--gold-primary);
-    letter-spacing: 0.5px;
-}
-
-.location-icon {
-    width: 12px;
-    height: 12px;
-}
-
-/* ============================================
-   CLOCK SECTION
-   ============================================ */
-.clock-section {
-    text-align: center;
-    flex-shrink: 0;
-    margin-top: 4px;
-}
-
-.clock-display {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 4px;
-    line-height: 1;
-}
-
-.time-main {
-    font-family: var(--font-digital);
-    font-size: clamp(3.5rem, 12vw, 7rem);
-    font-weight: 700;
-    color: var(--text-white);
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
-    letter-spacing: -1px;
-}
-
-.time-separator {
-    font-family: var(--font-digital);
-    font-size: clamp(2.5rem, 8vw, 5rem);
-    color: var(--gold-dim);
-    animation: pulse 1s ease-in-out infinite;
-}
-
-.time-seconds {
-    font-family: var(--font-digital);
-    font-size: clamp(1.2rem, 4vw, 2.2rem);
-    font-weight: 500;
-    color: var(--text-gray);
-    opacity: 0.7;
-    min-width: 50px;
-    text-align: center;
-}
-
-.time-ampm {
-    font-family: var(--font-digital);
-    font-size: clamp(0.9rem, 2.5vw, 1.4rem);
-    color: var(--gold-primary);
-    margin-left: 6px;
-    font-weight: 500;
-}
-
-.gregorian-date {
-    margin-top: 4px;
-    font-size: clamp(0.65rem, 1.8vw, 0.8rem);
-    color: var(--text-dim);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 0.9; }
-}
-
-/* ============================================
-   COMPACT PRAYER SECTION
-   ============================================ */
-.prayer-section {
-    text-align: center;
-    padding: 10px 20px;
-    background: linear-gradient(180deg, 
-        rgba(16, 185, 129, 0.06) 0%, 
-        rgba(16, 185, 129, 0.02) 100%
-    );
-    border: 1px solid rgba(16, 185, 129, 0.15);
-    border-radius: 12px;
-    backdrop-filter: blur(10px);
-    flex-shrink: 0;
-}
-
-.prayer-label {
-    font-size: 0.55rem;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 2px;
-}
-
-.prayer-name {
-    font-family: var(--font-heading);
-    font-size: clamp(1.2rem, 4vw, 1.8rem);
-    color: var(--emerald);
-    font-weight: 700;
-    text-shadow: 0 0 15px var(--emerald-glow);
-    margin-bottom: 2px;
-}
-
-.prayer-time {
-    font-family: var(--font-digital);
-    font-size: clamp(0.85rem, 2.5vw, 1.1rem);
-    color: var(--text-white);
-    opacity: 0.85;
-    margin-bottom: 8px;
-}
-
-/* Fixed Width Countdown Boxes */
-.countdown-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-}
-
-.countdown-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-width: 44px;
-    height: 44px;
-    background: rgba(251, 191, 36, 0.08);
-    border: 1px solid var(--gold-dim);
-    border-radius: 8px;
-    padding: 4px;
-}
-
-.countdown-value {
-    font-family: var(--font-digital);
-    font-size: clamp(1.1rem, 3vw, 1.4rem);
-    font-weight: 700;
-    color: var(--gold-primary);
-    line-height: 1;
-    text-shadow: 0 0 8px var(--gold-glow);
-    min-width: 28px;
-    text-align: center;
-}
-
-.countdown-label {
-    font-size: 0.5rem;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 2px;
-}
-
-.countdown-divider {
-    font-family: var(--font-digital);
-    font-size: clamp(1rem, 2.5vw, 1.3rem);
-    color: var(--gold-dim);
-    opacity: 0.5;
-    padding-bottom: 8px;
-}
-
-/* ============================================
-   SUNRISE SECTION
-   ============================================ */
-.sunrise-section {
-    text-align: center;
-    padding: 12px 28px;
-    animation: fadeIn 0.5s ease;
-    flex-shrink: 0;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.sunrise-icon {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto 8px;
-    animation: sunPulse 3s ease-in-out infinite;
-}
-
-@keyframes sunPulse {
-    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px var(--gold-dim)); }
-    50% { transform: scale(1.05); filter: drop-shadow(0 0 15px var(--gold-primary)); }
-}
-
-.sunrise-text {
-    font-family: var(--font-heading);
-    font-size: clamp(1.4rem, 4vw, 2rem);
-    color: var(--gold-primary);
-    font-weight: 700;
-    text-shadow: 0 0 15px var(--gold-glow);
-    margin-bottom: 2px;
-}
-
-.sunrise-time {
-    font-family: var(--font-digital);
-    font-size: clamp(1rem, 2.5vw, 1.3rem);
-    color: var(--text-white);
-    margin-bottom: 6px;
-}
-
-.sunrise-message {
-    font-size: 0.65rem;
-    color: var(--text-gray);
-    letter-spacing: 1px;
-    padding: 4px 12px;
-    background: rgba(251, 191, 36, 0.05);
-    border-radius: 16px;
-    display: inline-block;
-}
-
-/* ============================================
-   AYAT CONTAINER
-   ============================================ */
-.ayat-container {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    margin-top: auto;
-    margin-bottom: 8px;
-    flex-shrink: 0;
-}
-
-.ayat-glow {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 85%;
-    height: 110%;
-    background: radial-gradient(ellipse, var(--gold-glow) 0%, transparent 70%);
-    filter: blur(25px);
-    opacity: 0.4;
-    pointer-events: none;
-}
-
-.ayat-content {
-    position: relative;
-    background: linear-gradient(145deg, 
-        rgba(251, 191, 36, 0.06) 0%, 
-        rgba(0, 0, 0, 0.9) 50%,
-        rgba(251, 191, 36, 0.04) 100%
-    );
-    border: 1px solid rgba(251, 191, 36, 0.2);
-    border-radius: 16px;
-    padding: 14px 18px;
-    backdrop-filter: blur(15px);
-    box-shadow: 0 0 30px rgba(251, 191, 36, 0.08);
-}
-
-.ayat-content::before {
+    inset: 0;
     content: '';
-    position: absolute;
-    top: 0;
-    left: 20%;
-    right: 20%;
-    height: 1px;
-    background: linear-gradient(90deg, 
-        transparent 0%, 
-        var(--gold-primary) 50%, 
-        transparent 100%
-    );
+    pointer-events: none;
+    opacity: .18;
+    background-image: linear-gradient(30deg, rgba(255,255,255,.04) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,.04) 87.5%), linear-gradient(150deg, rgba(255,255,255,.04) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,.04) 87.5%);
+    background-size: 72px 124px;
 }
+button { font: inherit; }
+.hidden { display: none !important; }
 
-.ayat-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
+.ambient-glow { position: fixed; width: 42vw; height: 42vw; border-radius: 50%; pointer-events: none; filter: blur(40px); opacity: .13; }
+    .top-glow { top: -30vw; left: 29%; background: var(--gold); }
+.bottom-glow { right: -22vw; bottom: -25vw; background: var(--gold-accent); }
+.golden-frame { position: fixed; inset: 22px; z-index: 2; pointer-events: none; border: 1px solid rgba(212,175,55,.22); }
+.frame-line { position: absolute; background: var(--line); }
+.frame-top, .frame-bottom { left: 8%; right: 8%; height: 1px; }
+.frame-top { top: -1px; } .frame-bottom { bottom: -1px; }
+.frame-left, .frame-right { top: 8%; bottom: 8%; width: 1px; }
+.frame-left { left: -1px; } .frame-right { right: -1px; }
+.corner { position: absolute; width: 48px; height: 48px; border-color: var(--gold); border-style: solid; opacity: .7; }
+.corner-tl { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+.corner-tr { top: -1px; right: -1px; border-width: 2px 2px 0 0; }
+.corner-bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; }
+.corner-br { right: -1px; bottom: -1px; border-width: 0 2px 2px 0; }
+
+.display-container { position: relative; z-index: 3; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(290px, .9fr); grid-template-rows: auto auto auto; gap: clamp(16px, 2.5vw, 36px); align-items: center; width: min(1180px, calc(100% - 44px)); height: calc(100vh - 44px); margin: 22px auto; padding: clamp(42px, 6vh, 70px) clamp(30px, 6vw, 92px) 38px; overflow-y: auto; overflow-x: hidden; }
+.header-section { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.location-chip, .date-chip { display: inline-flex; align-items: center; gap: 9px; padding: 8px 12px; border: 1px solid var(--line); color: var(--gold-soft); background: rgba(212,175,55,.08); font: 600 .65rem var(--font-display); letter-spacing: .12em; text-transform: uppercase; }
+.location-icon { width: 15px; height: 15px; color: var(--gold-accent); }
+.date-chip { color: var(--gold-accent); border-color: rgba(212,175,55,.28); background: rgba(212,175,55,.06); }
+.clock-section { grid-column: 1; align-self: center; }
+.clock-display { display: flex; align-items: baseline; color: var(--gold-soft); font: 600 clamp(2.5rem, 8vw, 6.5rem) var(--font-digital); letter-spacing: .04em; line-height: 1; text-shadow: 0 0 35px rgba(216,179,90,.14); }
+.time-separator { margin: 0 .04em; color: var(--gold); animation: blink 2s steps(2) infinite; }
+.time-seconds { color: var(--gold-accent); font-size: .48em; }
+.time-ampm { margin-left: 12px; color: var(--muted); font-size: .16em; letter-spacing: .12em; }
+.gregorian-date { margin-top: 18px; color: var(--muted); font: 600 .72rem var(--font-display); letter-spacing: .14em; text-transform: uppercase; }
+.prayer-section, .sunrise-section { grid-column: 2; align-self: center; padding: 18px 20px; border: 1px solid var(--line); border-radius: 2px 18px 2px 18px; background: var(--panel); box-shadow: 0 18px 50px rgba(0,0,0,.28); animation: displayReveal 700ms 180ms ease both; will-change: transform, opacity; }
+.prayer-label { color: var(--gold-accent); font: 600 .68rem var(--font-display); letter-spacing: .16em; text-transform: uppercase; }
+.prayer-name { margin-top: 6px; color: var(--gold-soft); font: 600 clamp(1.15rem, 2.4vw, 1.75rem) var(--font-display); }
+.prayer-time { margin-top: 3px; color: var(--ivory); font: 500 clamp(1rem, 2.3vw, 1.35rem) var(--font-digital); }
+.countdown-wrapper { display: flex; align-items: center; gap: 5px; margin-top: 14px; }
+.countdown-box { display: grid; place-items: center; min-width: 42px; height: 44px; padding: 4px; border: 1px solid var(--line-soft); background: rgba(255,255,255,.035); }
+.countdown-value { color: var(--gold-soft); font: 600 .92rem var(--font-digital); }
+.countdown-label { color: var(--muted); font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; }
+.countdown-divider { color: var(--gold); }
+.sunrise-section { text-align: center; }
+.sunrise-icon svg { width: 36px; height: 36px; }
+.sunrise-text { margin-top: 7px; color: var(--gold-soft); font: 600 1.2rem var(--font-display); }
+.sunrise-time { margin-top: 6px; font: 500 1rem var(--font-digital); }
+.sunrise-message { margin-top: 10px; color: var(--muted); font-size: .8rem; }
+
+.ayat-container { grid-column: 1 / -1; align-self: end; border: 1px solid var(--line-soft); border-radius: 24px 2px 24px 2px; background: rgba(14, 13, 11, .86); box-shadow: 0 20px 80px rgba(0,0,0,.32); animation: displayReveal 700ms 320ms ease both; will-change: transform, opacity; }
+.ayat-content { position: relative; padding: clamp(18px, 3vw, 30px) clamp(22px, 5vw, 58px); text-align: center; }
+.ayat-header { display: flex; align-items: center; gap: 14px; }
+.ayat-header > div { flex: 1; }
+.mini-nav-btn { display: grid; place-items: center; flex: 0 0 auto; width: 30px; height: 30px; border: 1px solid var(--line); border-radius: 50%; color: var(--gold); background: rgba(212,175,55,.08); cursor: pointer; transition: 200ms ease; }
+.mini-nav-btn:hover { color: var(--night); background: var(--gold); }
+.ayat-badge { display: block; color: var(--gold-accent); font: 600 .6rem var(--font-display); letter-spacing: .15em; text-transform: uppercase; }
+.surah-name { display: block; margin-top: 4px; color: var(--muted); font-size: .75rem; }
+.ayat-arabic { margin-top: 18px; color: var(--gold-soft); font: 400 clamp(1.4rem, 3.5vw, 2.5rem)/1.55 var(--font-arabic); }
+.divider { display: flex; align-items: center; gap: 12px; width: min(300px, 60%); margin: 14px auto; color: var(--gold); }
+.divider-line { height: 1px; flex: 1; background: var(--line); }
+.divider-icon { font-size: .8rem; }
+.ayat-pronounce, .ayat-meaning { font-family: var(--font-bangla); }
+.ayat-pronounce { color: var(--gold-accent); font-size: .82rem; }
+.ayat-meaning { margin-top: 5px; color: var(--muted); font-size: .76rem; font-style: italic; }
+
+.exit-btn, .mute-btn, .fullscreen-toggle { position: fixed; z-index: 20; display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid var(--line-soft); border-radius: 50%; color: var(--muted); background: rgba(12,11,9,.9); cursor: pointer; transition: 200ms ease; }
+.exit-btn { top: 32px; right: 32px; }
+.mute-btn { top: 32px; right: 82px; }
+.fullscreen-toggle { left: 32px; bottom: 32px; color: var(--gold-soft); border-color: var(--line); }
+.exit-btn:hover { color: #f0907d; border-color: #f0907d; }
+.mute-btn:hover, .fullscreen-toggle:hover { color: var(--night); background: var(--gold); border-color: var(--gold); }
+.exit-btn svg, .mute-btn svg, .fullscreen-toggle svg { width: 17px; height: 17px; }
+.orientation-lock { display: none; }
+@keyframes blink { 50% { opacity: .25; } }
+@keyframes displayReveal { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+@media (max-width: 760px) {
+    body { overflow: auto; }
+    .display-container { display: flex; flex-direction: column; justify-content: flex-start; gap: 20px; width: calc(100% - 24px); height: calc(100vh - 24px); min-height: calc(100vh - 24px); margin: 12px auto; padding: 62px 22px 62px; overflow-y: auto; }
+    .header-section, .clock-section, .prayer-section, .sunrise-section, .ayat-container { width: 100%; }
+    .clock-section { text-align: center; }
+    .clock-display { justify-content: center; font-size: clamp(2.15rem, 14vw, 4.4rem); }
+    .gregorian-date { margin-top: 12px; }
+    .prayer-section, .sunrise-section { padding: 16px; }
+    .ayat-container { align-self: auto; }
+    .ayat-content { padding: 17px 16px; }
+    .golden-frame { inset: 12px; }
+    .frame-top, .frame-bottom { left: 10%; right: 10%; }
+    .exit-btn { top: 20px; right: 20px; }
+    .mute-btn { top: 20px; right: 66px; }
+    .fullscreen-toggle { left: 20px; bottom: 20px; }
 }
-
-.ayat-badge {
-    font-size: 0.5rem;
-    color: var(--gold-primary);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    padding: 2px 8px;
-    background: rgba(251, 191, 36, 0.08);
-    border-radius: 8px;
-    border: 1px solid var(--gold-dim);
+@media (max-width: 760px) and (orientation: portrait) {
+    .display-container, .golden-frame, .exit-btn, .mute-btn, .fullscreen-toggle, .ambient-glow { display: none; }
+    .orientation-lock { position: fixed; inset: 12px; z-index: 10; display: grid; place-content: center; padding: 28px; border: 1px solid var(--line); background: rgba(8, 8, 7, .97); text-align: center; }
+    .orientation-lock-mark { color: var(--gold-soft); font: 400 3rem var(--font-display); }
+    .orientation-lock h1 { margin-top: 12px; color: var(--gold-soft); font: 600 1.1rem var(--font-display); }
+    .orientation-lock p { max-width: 260px; margin: 8px auto 0; color: var(--muted); font-size: .85rem; }
 }
-
-.surah-name {
-    font-family: var(--font-heading);
-    font-size: 0.6rem;
-    color: var(--text-gray);
-    letter-spacing: 0.5px;
-}
-
-.ayat-arabic {
-    font-family: var(--font-arabic);
-    font-size: clamp(1.1rem, 3.5vw, 1.6rem);
-    color: var(--gold-primary);
-    text-align: center;
-    line-height: 1.7;
-    direction: rtl;
-    text-shadow: 0 0 20px var(--gold-glow);
-    margin-bottom: 8px;
-    min-height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.3s ease;
-}
-
-/* Divider */
-.divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin: 8px 0;
-}
-
-.divider-line {
-    flex: 1;
-    max-width: 80px;
-    height: 1px;
-    background: linear-gradient(90deg, 
-        transparent 0%, 
-        var(--gold-dim) 50%, 
-        transparent 100%
-    );
-}
-
-.divider-icon {
-    color: var(--gold-dim);
-    font-size: 0.75rem;
-}
-
-.ayat-pronounce {
-    font-family: var(--font-bangla);
-    font-size: clamp(0.75rem, 2.2vw, 0.95rem);
-    color: var(--emerald);
-    text-align: center;
-    line-height: 1.5;
-    margin-bottom: 6px;
-    transition: opacity 0.3s ease;
-}
-
-.ayat-meaning {
-    font-family: var(--font-bangla);
-    font-size: clamp(0.65rem, 1.8vw, 0.8rem);
-    color: var(--gold-primary);
-    text-align: center;
-    line-height: 1.4;
-    font-style: italic;
-    transition: opacity 0.3s ease;
-}
-
-/* ============================================
-   EXIT BUTTON
-   ============================================ */
-.exit-btn {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 36px;
-    height: 36px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    color: var(--text-gray);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    z-index: 200;
-}
-
-.exit-btn svg {
-    width: 16px;
-    height: 16px;
-}
-
-.exit-btn:hover {
-    background: rgba(239, 68, 68, 0.2);
-    border-color: rgba(239, 68, 68, 0.5);
-    color: #ef4444;
-}
-
-/* ============================================
-   MUTE BUTTON
-   ============================================ */
-.mute-btn {
-    position: fixed;
-    top: 20px;
-    right: 64px;
-    width: 36px;
-    height: 36px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    color: var(--text-gray);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    z-index: 200;
-}
-
-.mute-btn svg {
-    width: 16px;
-    height: 16px;
-}
-
-.mute-btn:hover {
-    background: rgba(251, 191, 36, 0.1);
-    border-color: var(--gold-dim);
-    color: var(--gold-primary);
-}
-
-.mute-btn.active {
-    background: rgba(251, 191, 36, 0.15);
-    border-color: var(--gold-primary);
-    color: var(--gold-primary);
-}
-
-.mini-nav-btn {
-    transition: all 0.2s ease;
-}
-
-.mini-nav-btn:hover {
-    background: rgba(251, 191, 36, 0.2) !important;
-    transform: scale(1.1);
-}
-
-.mini-nav-btn:active {
-    transform: scale(0.9);
-}
-
-/* ============================================
-   RESPONSIVE DESIGN
-   ============================================ */
-
-/* Mobile Portrait */
-@media (max-width: 480px) {
-    .display-container {
-        padding: 14px 20px 16px;
-        gap: 10px;
-    }
-
-    .header-section {
-        max-width: 100%;
-    }
-
-    .location-chip, .date-chip {
-        font-size: 0.6rem;
-        padding: 4px 8px;
-    }
-
-    .clock-section {
-        margin-top: 2px;
-    }
-
-    .time-seconds {
-        min-width: 40px;
-    }
-
-    .prayer-section {
-        padding: 8px 16px;
-    }
-
-    .countdown-box {
-        min-width: 38px;
-        height: 38px;
-    }
-
-    .countdown-value {
-        font-size: 1rem;
-        min-width: 24px;
-    }
-
-    .ayat-container {
-        max-width: 100%;
-        margin-bottom: 4px;
-    }
-
-    .ayat-content {
-        padding: 12px 14px;
-    }
-
-    .golden-frame .frame-top,
-    .golden-frame .frame-bottom {
-        left: 30px;
-        right: 30px;
-    }
-
-    .golden-frame .frame-left,
-    .golden-frame .frame-right {
-        top: 35px;
-        bottom: 35px;
-    }
-
-    .corner {
-        width: 18px;
-        height: 18px;
-    }
-
-    .exit-btn, .mute-btn {
-        width: 32px;
-        height: 32px;
-    }
-
-    .mute-btn {
-        right: 56px;
-    }
-}
-
-/* Mobile Landscape - KEY FIX */
-@media (max-height: 500px) and (orientation: landscape) {
-    .display-container {
-        padding: 10px 40px 12px;
-        gap: 6px;
-        justify-content: flex-start;
-    }
-
-    .header-section {
-        max-width: 500px;
-    }
-
-    .clock-section {
-        margin-top: 0;
-    }
-
-    .time-main {
-        font-size: clamp(2.2rem, 10vh, 4rem);
-    }
-
-    .time-separator {
-        font-size: clamp(1.6rem, 7vh, 3rem);
-    }
-
-    .time-seconds {
-        font-size: clamp(0.9rem, 3vh, 1.4rem);
-        min-width: 36px;
-    }
-
-    .time-ampm {
-        font-size: clamp(0.7rem, 2vh, 1rem);
-    }
-
-    .prayer-section {
-        padding: 6px 16px;
-    }
-
-    .prayer-name {
-        font-size: clamp(1rem, 3.5vh, 1.5rem);
-    }
-
-    .countdown-box {
-        min-width: 36px;
-        height: 36px;
-    }
-
-    .countdown-value {
-        font-size: 0.95rem;
-    }
-
-    .sunrise-section {
-        padding: 8px 20px;
-    }
-
-    .sunrise-icon {
-        width: 36px;
-        height: 36px;
-    }
-
-    .ayat-container {
-        max-width: 450px;
-        margin-top: 4px;
-        margin-bottom: 2px;
-    }
-
-    .ayat-content {
-        padding: 10px 14px;
-    }
-
-    .ayat-arabic {
-        font-size: clamp(0.9rem, 2.8vh, 1.3rem);
-        min-height: 32px;
-        margin-bottom: 4px;
-    }
-
-    .divider {
-        margin: 4px 0;
-    }
-
-    .ayat-pronounce {
-        font-size: clamp(0.65rem, 2vh, 0.8rem);
-        margin-bottom: 2px;
-    }
-
-    .ayat-meaning {
-    font-size: clamp(0.55rem, 1.6vh, 0.7rem);
-    }
-
-    .exit-btn, .mute-btn {
-        top: 10px;
-        width: 28px;
-        height: 28px;
-    }
-
-    .mute-btn {
-        right: 44px;
-    }
-}
-
-/* Tablet */
-@media (min-width: 769px) and (max-width: 1024px) {
-    .display-container {
-        padding: 20px 50px 24px;
-        gap: 14px;
-    }
-
-    .ayat-container {
-        max-width: 550px;
-    }
-}
-
-/* Large Screens */
-@media (min-width: 1400px) {
-    .display-container {
-        padding: 24px 80px 28px;
-        gap: 16px;
-    }
-
-    .ayat-container {
-        max-width: 700px;
-    }
-}
-
-/* AMOLED Optimization */
-@media (prefers-color-scheme: dark) {
-    body {
-        background: #000000;
-    }
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation: none !important;
-        transition: none !important;
-    }
+@media (max-height: 560px) and (orientation: landscape) {
+    .display-container { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto auto; gap: 6px 18px; width: calc(100% - 24px); height: calc(100vh - 24px); min-height: calc(100vh - 24px); margin: 12px auto; padding: 24px 48px 18px; }
+    .header-section { grid-column: 1 / -1; }
+    .clock-display { font-size: clamp(2rem, 8vw, 4rem); }
+    .gregorian-date { margin-top: 6px; }
+    .prayer-section { padding: 10px 16px; }
+    .ayat-container { grid-column: 1 / -1; }
+    .ayat-content { padding: 10px 30px; }
+    .ayat-arabic { margin-top: 8px; font-size: 1.45rem; }
+    .divider { margin: 5px auto; }
 }

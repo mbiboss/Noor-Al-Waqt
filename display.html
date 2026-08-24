@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no, viewport-fit=cover">
     <title>Noor Al-Waqt | Display Mode</title>
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#040a09">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,6 +15,12 @@
     <link rel="icon" type="image/png" href="logo.png" />
 </head>
 <body>
+    <div class="orientation-lock" aria-live="polite">
+        <div class="orientation-lock-mark">↔</div>
+        <h1>Landscape display</h1>
+        <p>For the best prayer display, rotate your device sideways.</p>
+    </div>
+
     <!-- Ambient Glow Effects -->
     <div class="ambient-glow top-glow"></div>
     <div class="ambient-glow bottom-glow"></div>
@@ -161,6 +167,11 @@
             <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
             <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
         </svg>
+    </button>
+
+    <button id="fullscreen-toggle-btn" class="fullscreen-toggle" type="button" aria-label="Enter Fullscreen" title="Enter Fullscreen">
+        <svg id="fullscreen-enter-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+        <svg id="fullscreen-exit-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg>
     </button>
 
     <script src="display.js?v=1.0.3"></script>

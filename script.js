@@ -102,7 +102,13 @@ const el = {
     clockAmpm: document.getElementById('clock-ampm'),
     clockDay: document.getElementById('clock-day'),
     clockFullDate: document.getElementById('clock-full-date'),
-    clockHijriDate: document.getElementById('clock-hijri-date')
+    clockHijriDate: document.getElementById('clock-hijri-date'),
+    fullscreenToggleBtn: document.getElementById('fullscreen-toggle-btn'),
+    fullscreenEnterIcon: document.getElementById('fullscreen-enter-icon'),
+    fullscreenExitIcon: document.getElementById('fullscreen-exit-icon'),
+    displayModeBtn: document.getElementById('display-mode-btn'),
+    displayModeShell: document.getElementById('display-mode-shell'),
+    displayModeFrame: document.getElementById('display-mode-frame')
 };
 
 // --- Audio System with Multiple Fallbacks ---
@@ -144,9 +150,7 @@ function createAudioElement() {
     quranAudio.crossOrigin = "anonymous";
     quranAudio.loop = true;
     quranAudio.volume = 0.7;
-
-    // Set initial source
-    quranAudio.src = RADIO_STREAMS[currentStreamIndex];
+    quranAudio.preload = 'none';
 
     // Handle errors by trying next stream
     quranAudio.addEventListener('error', (e) => {
@@ -215,6 +219,7 @@ function updateAudioPlayback() {
     if (isAudioMuted) {
         quranAudio.pause();
     } else {
+        if (!quranAudio.src) quranAudio.src = RADIO_STREAMS[currentStreamIndex];
         quranAudio.load();
         const playPromise = quranAudio.play();
         if (playPromise !== undefined) {
@@ -300,12 +305,6 @@ async function init() {
         el.introOverlay.classList.add('fade-out');
         el.appContainer.classList.remove('hidden');
         el.appContainer.classList.add('visible');
-
-        if (document.documentElement.requestFullscreen) {
-            document.documentElement.requestFullscreen().catch(e => {
-                console.log("Fullscreen request failed:", e);
-            });
-        }
 
         requestNotificationPermission();
     }
@@ -429,7 +428,7 @@ function initOrientationSuggestion() {
 
     function checkOrientation() {
         if (window.innerHeight > window.innerWidth && window.innerWidth < 768) {
-            if (overlay && !localStorage.getItem('noor_orientation_dismissed')) {
+            if (overlay) {
                 overlay.classList.remove('hidden');
             }
         } else {
@@ -450,8 +449,24 @@ function initOrientationSuggestion() {
 }
 
 function setupEventListeners() {
-    if(el.settingsBtn) el.settingsBtn.addEventListener('click', () => el.settingsModal.classList.remove('hidden'));
-    if(el.closeModal) el.closeModal.addEventListener('click', () => el.settingsModal.classList.add('hidden'));
+    initFullscreenToggle();
+    initDisplayModeNavigation();
+    initKeyboardShortcuts();
+    initCustomSelects();
+    const openSettings = () => {
+        if (!el.settingsModal) return;
+        el.settingsModal.classList.remove('hidden');
+        el.cityInput?.focus({ preventScroll: true });
+    };
+    const closeSettings = () => el.settingsModal?.classList.add('hidden');
+
+    if(el.settingsBtn) el.settingsBtn.addEventListener('click', openSettings);
+    if(el.closeModal) el.closeModal.addEventListener('click', closeSettings);
+    if(el.settingsModal) {
+        el.settingsModal.addEventListener('click', (event) => {
+            if (event.target === el.settingsModal) closeSettings();
+        });
+    }
 
     if(el.saveSettings) {
         el.saveSettings.addEventListener('click', async () => {
@@ -473,6 +488,8 @@ function setupEventListeners() {
                 await fetchPrayerTimes();
                 renderUI();
                 renderCalendar();
+            } else {
+                showToast('Please choose a city', true);
             }
         });
     }
@@ -508,15 +525,137 @@ function setupEventListeners() {
     }
 }
 
+function initCustomSelects() {
+    document.querySelectorAll('.custom-select').forEach((container) => {
+        const select = document.getElementById(container.dataset.selectId);
+        const trigger = container.querySelector('.custom-select-trigger');
+        const value = container.querySelector('.custom-select-value');
+        const menu = container.querySelector('.custom-select-menu');
+        if (!select || !trigger || !value || !menu) return;
+
+        const syncValue = () => {
+            const selected = select.options[select.selectedIndex];
+            value.textContent = selected ? selected.textContent : '';
+            menu.querySelectorAll('[aria-selected="true"]').forEach(option => option.setAttribute('aria-selected', 'false'));
+            const active = menu.querySelector(`[data-value="${CSS.escape(select.value)}"]`);
+            if (active) active.setAttribute('aria-selected', 'true');
+        };
+
+        Array.from(select.options).forEach((option) => {
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.className = 'custom-select-option';
+            item.textContent = option.textContent;
+            item.dataset.value = option.value;
+            item.setAttribute('role', 'option');
+            item.setAttribute('aria-selected', option.selected ? 'true' : 'false');
+            item.addEventListener('click', () => {
+                select.value = option.value;
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+                syncValue();
+                container.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
+            });
+            menu.appendChild(item);
+        });
+
+        trigger.addEventListener('click', (event) => {
+            event.stopPropagation();
+            document.querySelectorAll('.custom-select.open').forEach(open => {
+                if (open !== container) open.classList.remove('open');
+            });
+            const isOpen = container.classList.toggle('open');
+            trigger.setAttribute('aria-expanded', String(isOpen));
+        });
+        select.addEventListener('change', syncValue);
+        syncValue();
+    });
+
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.custom-select.open').forEach(container => {
+            container.classList.remove('open');
+            container.querySelector('.custom-select-trigger')?.setAttribute('aria-expanded', 'false');
+        });
+    });
+}
+
+function initDisplayModeNavigation() {
+    if (!el.displayModeBtn || !el.displayModeShell || !el.displayModeFrame) return;
+
+    const closeDisplayMode = () => {
+        el.displayModeShell.classList.remove('visible');
+        el.displayModeShell.setAttribute('aria-hidden', 'true');
+        if (window.location.hash === '#display') history.back();
+    };
+
+    el.displayModeBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (!el.displayModeFrame.src) el.displayModeFrame.src = 'display.html';
+        el.displayModeShell.classList.add('visible');
+        el.displayModeShell.setAttribute('aria-hidden', 'false');
+        if (window.location.hash !== '#display') history.pushState({ display: true }, '', '#display');
+    });
+
+    window.addEventListener('popstate', () => {
+        if (window.location.hash !== '#display') {
+            el.displayModeShell.classList.remove('visible');
+            el.displayModeShell.setAttribute('aria-hidden', 'true');
+        }
+    });
+
+    window.addEventListener('message', (event) => {
+        if (event.origin === window.location.origin && event.data?.type === 'noor-exit-display') {
+            closeDisplayMode();
+        }
+    });
+}
+
+function initKeyboardShortcuts() {
+    document.addEventListener('keydown', (event) => {
+        if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+
+        if (event.key.toLowerCase() === 'd' && el.displayModeBtn) el.displayModeBtn.click();
+        if (event.key.toLowerCase() === 'f' && el.fullscreenToggleBtn) el.fullscreenToggleBtn.click();
+        if (event.key.toLowerCase() === 'm' && el.audioToggleBtn) el.audioToggleBtn.click();
+        if (event.key.toLowerCase() === 's' && el.settingsBtn) el.settingsBtn.click();
+        if (event.key === 'Escape' && el.settingsModal && !el.settingsModal.classList.contains('hidden')) {
+            el.settingsModal.classList.add('hidden');
+        }
+    });
+}
+
 function requestNotificationPermission() {
     if ('Notification' in window) {
         Notification.requestPermission();
     }
 }
 
+function initFullscreenToggle() {
+    const button = el.fullscreenToggleBtn;
+    if (!button) return;
+
+    const updateFullscreenUI = () => {
+        const isFullscreen = Boolean(document.fullscreenElement);
+        button.setAttribute('aria-label', isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen');
+        button.title = isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen';
+        if (el.fullscreenEnterIcon) el.fullscreenEnterIcon.classList.toggle('hidden', isFullscreen);
+        if (el.fullscreenExitIcon) el.fullscreenExitIcon.classList.toggle('hidden', !isFullscreen);
+    };
+
+    button.addEventListener('click', () => {
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
+        } else if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(() => {});
+        }
+    });
+    document.addEventListener('fullscreenchange', updateFullscreenUI);
+    updateFullscreenUI();
+}
+
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/service-worker.js')
+        navigator.serviceWorker.register('./service-worker.js')
             .then(() => console.log('Service Worker Registered'))
             .catch(err => console.error('Service Worker Registration Failed', err));
     }
@@ -562,8 +701,54 @@ async function fetchPrayerTimes() {
         const prevMonthDate = new Date(year, month - 2, 1);
         const prevMonthUrl = `${API_URL}/calendarByCity/${prevMonthDate.getFullYear()}/${prevMonthDate.getMonth() + 1}?city=${appState.city}&country=${appState.country}&method=1&school=1`;
 
-        const [resp1, resp2, resp3] = await Promise.all([fetch(url), fetch(nextMonthUrl), fetch(prevMonthUrl)]);
-        const [data1, data2, data3] = await Promise.all([resp1.json(), resp2.json(), resp3.json()]);
+        const fetchJson = async (requestUrl) => {
+            for (let attempt = 0; attempt < 3; attempt++) {
+                const response = await fetch(requestUrl);
+                if (response.ok) return response.json();
+                if (response.status < 500 || attempt === 2) {
+                    throw new Error(`Prayer API returned HTTP ${response.status}`);
+                }
+                await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+            }
+        };
+
+        const fetchMonth = async (monthYear, monthNumber, monthlyUrl) => {
+            try {
+                return await fetchJson(monthlyUrl);
+            } catch (monthlyError) {
+                const daysInMonth = new Date(monthYear, monthNumber, 0).getDate();
+                const dailyData = [];
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateString = `${day.toString().padStart(2, '0')}-${monthNumber.toString().padStart(2, '0')}-${monthYear}`;
+                    const dailyUrl = `${API_URL}/timingsByCity/${dateString}?city=${encodeURIComponent(appState.city)}&country=${encodeURIComponent(appState.country)}&method=1&school=1`;
+                    try {
+                        const response = await fetchJson(dailyUrl);
+                        if (response.code === 200) dailyData.push(response.data);
+                    } catch (error) {
+                        console.warn(`Calendar date unavailable: ${dateString}`);
+                    }
+                }
+
+                if (dailyData.length === 0) throw monthlyError;
+                return { code: 200, data: dailyData };
+            }
+        };
+
+        const fetchOptionalMonth = async (requestUrl) => {
+            try {
+                return await fetchJson(requestUrl);
+            } catch (error) {
+                console.warn('Optional calendar month unavailable:', error);
+                return { code: 500, data: [] };
+            }
+        };
+
+        const [data1, data2, data3] = await Promise.all([
+            fetchMonth(year, month, url),
+            fetchOptionalMonth(nextMonthUrl),
+            fetchOptionalMonth(prevMonthUrl)
+        ]);
 
         if (data1.code === 200) {
             let combinedData = [];
@@ -578,7 +763,7 @@ async function fetchPrayerTimes() {
         }
     } catch (error) {
         console.error(error);
-        showToast('Network error', true);
+        showToast('Prayer service is temporarily unavailable', true);
     }
 }
 
@@ -793,7 +978,7 @@ function updateJummaCountdown(dhuhrTime) {
                 <div class="countdown-box"><span class="value">${pad(secs)}</span><span class="label">sec</span></div>
             `;
         } else {
-            jummaCountdownEl.innerHTML = '<span style="color: var(--accent-emerald);">Started</span>';
+            jummaCountdownEl.innerHTML = '<span style="color: var(--accent-gold);">Started</span>';
             clearInterval(window.jummaInterval);
         }
     }, 1000);
